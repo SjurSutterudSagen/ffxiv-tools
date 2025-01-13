@@ -2,6 +2,14 @@
 
 ## Set up basic project
 
+### Docs
+
+- [ ] Set up the docs
+- [ ] Set up the docs for the API
+- [ ] Set up the docs for the web app
+- [ ] Set up the docs for the data access
+- [ ] Set up the docs for the storage layer
+
 ### Orchestrator project
 
 This is the project that will be used to orchestrate the other projects. It will be responsible for setting up the environment, and for running the other projects.
