@@ -2,6 +2,18 @@
 
 ## Set up basic project
 
+### Orchestrator project
+
+This is the project that will be used to orchestrate the other projects. It will be responsible for setting up the environment, and for running the other projects.
+
+- [ ] Set up the project
+- [ ] Set up the environment
+- [ ] Set up the configuration
+- [ ] Set up the error handling
+- [ ] Set up the logging
+- [ ] Set up the metrics
+- [ ] Set up the health checks
+
 ### Nextjs web app
 
 For displaying the tools to users. This is intended to include crafting information, and prices for selling/profits.
@@ -10,7 +22,18 @@ For displaying the tools to users. This is intended to include crafting informat
 - [x] Set up the layout
 - [x] Set up the navigation
 - [ ] Set up fonts
+- [ ] Set up colors
+- [ ] Set up typography
+- [ ] Set up translations
 - [ ] Set up icons/svgs
+  - [ ] Set up the icons for the app
+  - [ ] Set up the icons for the tools
+  - [ ] Set up the icons for the tradeskills
+  - [ ] Set up the icons for the settings
+- [ ] Set up the data fetching to the API
+  - [ ] Fetching data from the API for crafting
+  - [ ] Fetching data from the API for market
+  - [ ] Fetching data from the API for gathering
 
 #### Features
 
