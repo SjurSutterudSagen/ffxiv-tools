@@ -7,12 +7,11 @@
 This is the project that will be used to orchestrate the other projects. It will be responsible for setting up the environment, and for running the other projects.
 
 - [ ] Set up the project
+  - [ ] Set up Git Submodules? Or just use a monorepo? or something else?
 - [ ] Set up the environment
 - [ ] Set up the configuration
-- [ ] Set up the error handling
-- [ ] Set up the logging
-- [ ] Set up the metrics
-- [ ] Set up the health checks
+- [ ] Set up containerization
+- [ ] Set up CI/CD
 
 ### Nextjs web app
 
@@ -34,6 +33,10 @@ For displaying the tools to users. This is intended to include crafting informat
   - [ ] Fetching data from the API for crafting
   - [ ] Fetching data from the API for market
   - [ ] Fetching data from the API for gathering
+- [ ] Set up the error handling
+- [ ] Set up the logging
+- [ ] Set up the metrics
+- [ ] Set up the health checks
 
 #### Features
 
@@ -60,8 +63,20 @@ Use vitest for unit-tests, and playwright for UI tests.
 
 For getting the data stored in parquet files, and analyzing it.
 
+- [ ] Set up the project
+- [ ] Set up the error handling
+- [ ] Set up the logging
+- [ ] Set up the metrics
+- [ ] Set up the health checks
+
 #### Features
 
 ### Storage Layer: For storing parquet files and/or a database
 
 For storing the information that is needed. This could be a database for some things, or parquet files for other things.
+
+- [ ] Set up the project
+- [ ] Set up the error handling
+- [ ] Set up the logging
+- [ ] Set up the metrics
+- [ ] Set up the health checks
