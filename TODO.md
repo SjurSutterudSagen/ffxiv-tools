@@ -5,10 +5,10 @@
 ### Docs
 
 - [ ] Set up the docs
-- [ ] Set up the docs for the API
-- [ ] Set up the docs for the web app
-- [ ] Set up the docs for the data access
-- [ ] Set up the docs for the storage layer
+  - [ ] Set up the docs for the API
+  - [ ] Set up the docs for the web app
+  - [ ] Set up the docs for the data access
+  - [ ] Set up the docs for the storage layer
 
 ### Orchestrator project
 
