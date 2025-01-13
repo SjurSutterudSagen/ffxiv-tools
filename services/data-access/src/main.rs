@@ -10,7 +10,7 @@ async fn main() {
 
     // Build our application with a route
     let app = Router::new()
-        .route("/health", get(|| async { "OK" }));
+        .route("/health", get(|| async { "FFXIV Tools Data Access OK" }));
 
     // Run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3001")

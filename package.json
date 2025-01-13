@@ -9,6 +9,14 @@
     "dev": "npm run dev --workspace=@ffxiv-tools/web",
     "build": "npm run build --workspace=@ffxiv-tools/web",
     "test": "npm run test --workspace=@ffxiv-tools/web",
-    "lint": "npm run lint --workspace=@ffxiv-tools/web"
+    "lint": "npm run lint --workspace=@ffxiv-tools/web",
+    "dev:web": "npm run dev --workspace=@ffxiv-tools/web",
+    "dev:data-access": "cd services/data-access && cargo run",
+    "dev:storage": "cd services/storage && cargo run",
+    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:data-access\" \"npm run dev:storage\"",
+    "start:all": "concurrently \"npm run start --workspace=@ffxiv-tools/web\" \"npm run dev:data-access\" \"npm run dev:storage\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 } 
