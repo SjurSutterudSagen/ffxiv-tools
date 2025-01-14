@@ -2,6 +2,36 @@
 
 ## Set up basic project
 
+- [ ] Set up the basics of the projects
+  - [ ] Set up the web project
+    - [x] Create the project
+    - [x] Set up the basic layout
+    - [x] Set up the basic navigation
+    - [ ] Set up the basic fonts
+    - [ ] Set up the basic colors
+    - [ ] Set up the basic typography
+    - [ ] Set up the basic icons
+    - [ ] Set up the basic translations
+    - [x] Set up the basic testing tooling
+    - [ ] Set up the basic logging
+    - [ ] Set up the basic metrics
+    - [ ] Set up the basic health checks
+    - [ ] Set up the basic error handling
+  - [ ] Set up the data-access project
+    - [x] Create the project
+    - [x] Set up the basic testing tooling
+    - [ ] Set up the basic logging
+    - [ ] Set up the basic metrics
+    - [ ] Set up the basic health checks
+    - [ ] Set up the basic error handling
+  - [ ] Set up the storage project
+    - [x] Create the project
+    - [x] Set up the basic testing tooling
+    - [ ] Set up the basic logging
+    - [ ] Set up the basic metrics
+    - [ ] Set up the basic health checks
+    - [ ] Set up the basic error handling
+
 ### Docs
 
 - [ ] Set up the docs
