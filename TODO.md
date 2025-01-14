@@ -18,7 +18,7 @@
     - [ ] Set up the basic health checks
     - [ ] Set up the basic error handling
     - [ ] Set up containerization
-      - [ ] Set up Dockerfile
+      - [x] Set up Dockerfile
   - [ ] Set up the data-access project
     - [x] Create the project
     - [x] Set up the basic testing tooling
