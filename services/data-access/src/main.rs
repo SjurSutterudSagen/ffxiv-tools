@@ -1,7 +1,4 @@
-use axum::{
-    routing::get,
-    Router,
-};
+use ffxiv_tools_data_access::create_app;
 
 #[tokio::main]
 async fn main() {
@@ -9,8 +6,7 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     // Build our application with a route
-    let app = Router::new()
-        .route("/health", get(|| async { "FFXIV Tools Data Access OK" }));
+    let app = create_app();
 
     // Run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3001")

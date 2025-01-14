@@ -6,17 +6,28 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=@ffxiv-tools/web",
-    "build": "npm run build --workspace=@ffxiv-tools/web",
-    "test": "npm run test --workspace=@ffxiv-tools/web",
-    "lint": "npm run lint --workspace=@ffxiv-tools/web",
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:data-access\" \"npm run dev:storage\"",
     "dev:web": "npm run dev --workspace=@ffxiv-tools/web",
     "dev:data-access": "cd services/data-access && cargo run",
     "dev:storage": "cd services/storage && cargo run",
-    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:data-access\" \"npm run dev:storage\"",
-    "start:all": "concurrently \"npm run start --workspace=@ffxiv-tools/web\" \"npm run dev:data-access\" \"npm run dev:storage\""
+    "build": "concurrently \"npm run build:web\" \"npm run build:data-access\" \"npm run build:storage\"",
+    "build:web": "npm run build --workspace=@ffxiv-tools/web",
+    "build:data-access": "cd services/data-access && cargo build --release",
+    "build:storage": "cd services/storage && cargo build --release",
+    "test": "concurrently \"npm run test:web\" \"npm run test:data-access\" \"npm run test:storage\"",
+    "test:web": "npm run test --workspace=@ffxiv-tools/web",
+    "test:data-access": "cd services/data-access && cargo test",
+    "test:storage": "cd services/storage && cargo test",
+    "lint": "concurrently \"npm run lint:web\" \"npm run lint:data-access\" \"npm run lint:storage\"",
+    "lint:web": "npm run lint --workspace=@ffxiv-tools/web",
+    "lint:data-access": "cd services/data-access && cargo clippy",
+    "lint:storage": "cd services/storage && cargo clippy",
+    "start": "concurrently \"npm run start:web\" \"npm run start:data-access\" \"npm run start:storage\"",
+    "start:web": "npm run start --workspace=@ffxiv-tools/web",
+    "start:data-access": "cd services/data-access && cargo run --release",
+    "start:storage": "cd services/storage && cargo run --release"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^9.1.2"
   }
-} 
+}
