@@ -15,6 +15,7 @@
     "build:data-access": "cd services/data-access && cargo build --release",
     "build:storage": "cd services/storage && cargo build --release",
     "test": "concurrently \"npm run test:web\" \"npm run test:data-access\" \"npm run test:storage\"",
+    "test:all": "npm run test:once --workspace=@ffxiv-tools/web && cd services/data-access && cargo test && cd ../storage && cargo test",
     "test:web": "npm run test --workspace=@ffxiv-tools/web",
     "test:data-access": "cd services/data-access && cargo test",
     "test:storage": "cd services/storage && cargo test",
