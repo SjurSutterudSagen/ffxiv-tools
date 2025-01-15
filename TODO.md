@@ -24,10 +24,10 @@
     - [x] Set up the basic testing tooling
     - [ ] Set up the basic logging
     - [ ] Set up the basic metrics
-    - [ ] Set up the basic health checks
+    - [x] Set up the basic health checks
     - [ ] Set up the basic error handling
     - [ ] Set up containerization
-      - [ ] Set up Dockerfile
+      - [x] Set up Dockerfile
   - [ ] Set up the storage project
     - [x] Create the project
     - [x] Set up the basic testing tooling
