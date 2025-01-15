@@ -6,6 +6,10 @@ FROM rust:1.84.0-alpine3.21 AS builder
 ARG BUILD_DATE
 ARG BUILD_REVISION
 
+# Validate build arguments
+RUN test -n "$BUILD_DATE" || (echo "BUILD_DATE not set" && false)
+RUN test -n "$BUILD_REVISION" || (echo "BUILD_REVISION not set" && false)
+
 # Set environment variables for the build
 ENV CARGO_TERM_COLOR=always \
   CARGO_NET_GIT_FETCH_WITH_CLI=true \
@@ -16,6 +20,7 @@ ENV CARGO_TERM_COLOR=always \
 WORKDIR /usr/src/ffxiv-tools-data-access
 
 # Install required system dependencies
+# hadolint ignore=DL3018
 RUN apk --no-cache upgrade && \
   apk add --no-cache \
   musl-dev \
@@ -30,12 +35,19 @@ RUN addgroup -S rust && adduser -S rust -G rust
 # Set ownership of cargo home
 RUN chown -R rust:rust $CARGO_HOME
 
+# Create src directory with proper permissions
+RUN mkdir -p /usr/src/ffxiv-tools-data-access/src && \
+  chown -R rust:rust /usr/src/ffxiv-tools-data-access
+
+# Switch to non-root user for building
+USER rust
+
 # Copy manifests
 COPY --chown=rust:rust Cargo.* ./
 
 # Cache dependencies
-RUN mkdir src && \
-  echo "fn main() {}" > src/main.rs && \
+# hadolint ignore=DL3059
+RUN echo "fn main() {}" > src/main.rs && \
   cargo build --release --locked && \
   rm -rf src
 
@@ -48,7 +60,7 @@ RUN cargo build --release --locked && \
   strip target/release/ffxiv-tools-data-access
 
 # Final stage
-FROM alpine:3.21
+FROM alpine:3.21.0
 
 WORKDIR /app
 
@@ -86,11 +98,12 @@ EXPOSE 3001
 # Set runtime environment variables
 ENV RUST_LOG=info \
   TZ=UTC \
-  RUST_BACKTRACE=1
+  RUST_BACKTRACE=1 \
+  RUST_LOG_FORMAT=json
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+  CMD wget -qO- http://localhost:3001/health | grep -q "OK" || exit 1
 
 # Use tini as init
 ENTRYPOINT ["/sbin/tini", "--"]
