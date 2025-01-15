@@ -11,7 +11,7 @@ use axum::body::to_bytes;
 mod health_tests {
     use super::*;
 
-    const EXPECTED_RESPONSE: &str = "FFXIV Tools Data Access OK";
+    const EXPECTED_RESPONSE: &str = "OK";
 
     #[tokio::test]
     async fn health_endpoint_returns_ok_status_and_message() {
