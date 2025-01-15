@@ -10,6 +10,10 @@ Warnings:
 
 - The services take a long time to build. 500+ seconds.
 
+## Start the services
+
+docker compose up
+
 ## Build and start all services
 
 docker compose up --build
