@@ -1,8 +1,13 @@
 # Using node:22-alpine3.21 to avoid some nextjs issues with 
 # glibc-based linux version and memory issues
 
+# Declare build arguments in this stage
+ARG BUILD_DATE
+ARG BUILD_REVISION
+
 # Stage 1: Dependencies
 FROM node:22-alpine3.21 AS deps
+
 WORKDIR /app
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
@@ -48,9 +53,17 @@ RUN npm run build:web
 FROM node:22-alpine3.21 AS runner
 WORKDIR /app
 
+# Redeclare build arguments in this stage
+ARG BUILD_DATE
+ARG BUILD_REVISION
+
 LABEL org.opencontainers.image.source="https://github.com/SjurSutterudSagen/ffxiv-tools" \
   org.opencontainers.image.description="FFXIV Tools Web Application" \
-  org.opencontainers.image.licenses="MIT"
+  org.opencontainers.image.licenses="MIT" \
+  org.opencontainers.image.version="0.1.0" \
+  org.opencontainers.image.created="${BUILD_DATE}" \
+  org.opencontainers.image.revision="${BUILD_REVISION}" \
+  org.opencontainers.image.authors="Sjur Sutterud Sagen"
 
 # Update system packages with no cache
 RUN apk --no-cache upgrade && \
