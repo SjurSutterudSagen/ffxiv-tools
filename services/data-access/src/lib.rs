@@ -15,7 +15,9 @@ pub fn create_app() -> Router {
 
 pub async fn run_app(app: Router) {
     let addr = SocketAddr::from(([0, 0, 0, 0], 3001));
-    println!("Listening on {}", addr);
+
+    tracing::info!("Data Access service listening on {}", addr);
+    
     axum::serve(tokio::net::TcpListener::bind(addr).await.unwrap(), app)
         .await
         .unwrap();
