@@ -26,6 +26,11 @@ services:
       storage:
         condition: service_healthy
     restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: apps/web
+          target: dev
 
   data-access:
     build:
@@ -40,6 +45,7 @@ services:
     environment:
       - RUST_LOG=info
       - RUST_BACKTRACE=1
+      - ADDRESS=0.0.0.0:3001
     networks:
       - ffxiv-tools
     healthcheck:
@@ -49,6 +55,11 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: services/data-access
+          target: dev
 
   storage:
     build:
@@ -63,6 +74,7 @@ services:
     environment:
       - RUST_LOG=info
       - RUST_BACKTRACE=1
+      - ADDRESS=0.0.0.0:3002
     networks:
       - ffxiv-tools
     healthcheck:
@@ -72,6 +84,11 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: services/storage
+          target: dev
 
 networks:
   ffxiv-tools:

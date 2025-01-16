@@ -14,6 +14,10 @@ Warnings:
 
 docker compose up
 
+### For development with auto-rebuild
+
+docker compose watch
+
 ## Build and start all services
 
 docker compose up --build
