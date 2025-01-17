@@ -44,7 +44,7 @@ COPY --from=deps /usr/lib/node_modules /usr/lib/node_modules
 
 # Copy package files
 COPY package*.json ./
-COPY packages/config/package.json ./packages/config/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
 COPY apps/web/package.json ./apps/web/
 
 # Install dependencies
@@ -52,7 +52,7 @@ RUN npm ci
 
 # Copy source files
 COPY tsconfig.json ./
-COPY packages/config ./packages/config/
+COPY packages/typescript-config ./packages/typescript-config/
 COPY apps/web ./apps/web
 
 # Build config package first

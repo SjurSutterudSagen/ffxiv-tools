@@ -1,4 +1,4 @@
-import { SECURITY } from "@ffxiv-tools/config";
+import { SECURITY } from "../../../../packages/typescript-config/src";
 
 export const ALLOWED_ORIGINS =
   process.env.ALLOWED_ORIGINS?.split(",") ??
