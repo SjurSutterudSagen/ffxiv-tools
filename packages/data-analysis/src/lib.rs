@@ -19,7 +19,7 @@ pub fn create_app() -> Router {
 pub async fn run_app(app: Router) {
     let addr = SocketAddr::from(([0, 0, 0, 0], 3002));
     
-    tracing::info!("Storage service listening on {}", addr);
+    tracing::info!("Data Analysis service listening on {}", addr);
 
     match tokio::net::TcpListener::bind(addr).await {
         Ok(listener) => {

@@ -12,7 +12,7 @@ async fn main() {
         .with_line_number(true)
         .init();
 
-    tracing::info!("Data Access service initializing");
+    tracing::info!("Data Access API service initializing");
 
     // Build our application with a route
     let app = create_app();
@@ -20,5 +20,5 @@ async fn main() {
     // Run the application
     run_app(app).await;
 
-    tracing::info!("Data Access service shutting down");
+    tracing::info!("Data Access API service shutting down");
 } 
