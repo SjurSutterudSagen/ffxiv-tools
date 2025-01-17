@@ -1,53 +1,142 @@
+interface RateLimitConfig {
+  windowMs: number; // Window size in milliseconds
+  maxRequests: number; // Maximum requests per window
+  cleanupIntervalMs: number; // Cleanup interval in milliseconds
+}
 interface RateLimitEntry {
   count: number;
   timestamp: number;
 }
+interface RateLimitRequests extends Map<string, RateLimitEntry> {}
+interface RateLimitStatus {
+  remaining: number;
+  reset: number;
+  total: number;
+}
 
 class InMemoryRateLimiter {
-  private requests: Map<string, RateLimitEntry>;
-  private readonly windowMs: number;
-  private readonly maxRequests: number;
+  private readonly requests: RateLimitRequests;
+  private readonly config: RateLimitConfig;
+  private cleanupInterval: ReturnType<typeof setInterval> | null;
 
-  constructor(windowMs = 60000, maxRequests = 20) {
+  constructor(config: Partial<RateLimitConfig> = {}) {
     this.requests = new Map();
-    this.windowMs = windowMs;
-    this.maxRequests = maxRequests;
+    this.cleanupInterval = null;
 
-    // Clean up old entries every minute
-    setInterval(() => this.cleanup(), 60000);
+    // Default configuration
+    this.config = {
+      windowMs: 60_000, // 1 minute
+      maxRequests: 20, // 20 requests per minute
+      cleanupIntervalMs: 60_000, // Cleanup every minute
+      ...config,
+    };
+
+    this.startCleanup();
   }
 
+  /**
+   * Start the cleanup interval
+   * @private
+   */
+  private startCleanup(): void {
+    if (this.cleanupInterval) {
+      return;
+    }
+
+    this.cleanupInterval = setInterval(
+      () => this.cleanup(),
+      this.config.cleanupIntervalMs
+    );
+
+    // Prevent the interval from keeping the process alive
+    if (this.cleanupInterval.unref) {
+      this.cleanupInterval.unref();
+    }
+  }
+
+  /**
+   * Clean up expired entries
+   * @private
+   */
   private cleanup(): void {
     const now = Date.now();
     for (const [key, entry] of this.requests.entries()) {
-      if (now - entry.timestamp > this.windowMs) {
+      if (now - entry.timestamp > this.config.windowMs) {
         this.requests.delete(key);
       }
     }
   }
 
-  async isRateLimited(identifier: string): Promise<boolean> {
+  /**
+   * Stop the cleanup interval
+   * @public
+   */
+  public stop(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+  }
+
+  /**
+   * Check if a request should be rate limited
+   * @param identifier - Unique identifier for the request (e.g., IP address)
+   * @returns Promise<boolean> - True if rate limited, false otherwise
+   * @public
+   */
+  public async isRateLimited(identifier: string): Promise<boolean> {
     const now = Date.now();
     const entry = this.requests.get(identifier);
 
+    // First request from this identifier
     if (!entry) {
       this.requests.set(identifier, { count: 1, timestamp: now });
+
       return false;
     }
 
-    if (now - entry.timestamp > this.windowMs) {
+    // Window has expired, reset the counter
+    if (now - entry.timestamp > this.config.windowMs) {
       this.requests.set(identifier, { count: 1, timestamp: now });
+
       return false;
     }
 
-    if (entry.count >= this.maxRequests) {
+    // Check if over limit
+    if (entry.count >= this.config.maxRequests) {
       return true;
     }
 
+    // Increment counter
     entry.count++;
+
     return false;
+  }
+
+  /**
+   * Get current rate limit status for an identifier
+   * @param identifier - Unique identifier for the request
+   * @returns RateLimitStatus containing rate limit information
+   * @public
+   */
+  public getRateLimitStatus(identifier: string): RateLimitStatus {
+    const entry = this.requests.get(identifier);
+
+    if (!entry) {
+      return {
+        remaining: this.config.maxRequests,
+        reset: Date.now() + this.config.windowMs,
+        total: this.config.maxRequests,
+      };
+    }
+
+    return {
+      remaining: Math.max(0, this.config.maxRequests - entry.count),
+      reset: entry.timestamp + this.config.windowMs,
+      total: this.config.maxRequests,
+    };
   }
 }
 
-// Export a singleton instance
+// Export a singleton instance with default configuration
 export const rateLimiter = new InMemoryRateLimiter();
