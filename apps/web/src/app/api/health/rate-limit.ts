@@ -2,32 +2,50 @@ interface RateLimitConfig {
   windowMs: number; // Window size in milliseconds
   maxRequests: number; // Maximum requests per window
   cleanupIntervalMs: number; // Cleanup interval in milliseconds
+  maxEntries?: number; // Maximum number of tracked IPs
 }
 interface RateLimitEntry {
   count: number;
   timestamp: number;
 }
-interface RateLimitRequests extends Map<string, RateLimitEntry> {}
+type RateLimitRequests = Map<string, RateLimitEntry>;
 interface RateLimitStatus {
   remaining: number;
   reset: number;
   total: number;
+}
+interface RateLimitMetrics {
+  totalRequests: number;
+  limitedRequests: number;
+  activeWindows: number;
+  lastCleanup: number;
 }
 
 class InMemoryRateLimiter {
   private readonly requests: RateLimitRequests;
   private readonly config: RateLimitConfig;
   private cleanupInterval: ReturnType<typeof setInterval> | null;
+  private metrics: RateLimitMetrics = {
+    totalRequests: 0,
+    limitedRequests: 0,
+    activeWindows: 0,
+    lastCleanup: Date.now(),
+  };
 
   constructor(config: Partial<RateLimitConfig> = {}) {
     this.requests = new Map();
     this.cleanupInterval = null;
+
+    const maxEntries = process.env.RATE_LIMIT_MAX_ENTRIES
+      ? parseInt(process.env.RATE_LIMIT_MAX_ENTRIES, 10)
+      : 10000;
 
     // Default configuration
     this.config = {
       windowMs: 60_000, // 1 minute
       maxRequests: 20, // 20 requests per minute
       cleanupIntervalMs: 60_000, // Cleanup every minute
+      maxEntries, // Limit tracked IPs from environment or default
       ...config,
     };
 
@@ -60,11 +78,22 @@ class InMemoryRateLimiter {
    */
   private cleanup(): void {
     const now = Date.now();
+    let cleaned = 0;
+
     for (const [key, entry] of this.requests.entries()) {
       if (now - entry.timestamp > this.config.windowMs) {
         this.requests.delete(key);
+
+        cleaned++;
       }
     }
+
+    this.metrics.lastCleanup = now;
+    this.metrics.activeWindows = this.requests.size;
+
+    console.info(
+      `Rate limiter cleanup: removed ${cleaned} entries, active: ${this.requests.size}`
+    );
   }
 
   /**
@@ -85,6 +114,29 @@ class InMemoryRateLimiter {
    * @public
    */
   public async isRateLimited(identifier: string): Promise<boolean> {
+    this.metrics.totalRequests++;
+    const isLimited = await this._checkRateLimit(identifier);
+
+    if (isLimited) {
+      this.metrics.limitedRequests++;
+
+      console.warn(`Rate limit exceeded for ${identifier}`);
+    }
+
+    return isLimited;
+  }
+
+  private async _checkRateLimit(identifier: string): Promise<boolean> {
+    // Check map size before adding new entries
+    if (
+      !this.requests.has(identifier) &&
+      this.requests.size >= (this.config.maxEntries ?? 10000)
+    ) {
+      console.warn("Rate limiter map size limit reached");
+
+      return false;
+    }
+
     const now = Date.now();
     const entry = this.requests.get(identifier);
 
@@ -134,6 +186,13 @@ class InMemoryRateLimiter {
       remaining: Math.max(0, this.config.maxRequests - entry.count),
       reset: entry.timestamp + this.config.windowMs,
       total: this.config.maxRequests,
+    };
+  }
+
+  public getMetrics(): RateLimitMetrics {
+    return {
+      ...this.metrics,
+      activeWindows: this.requests.size,
     };
   }
 }
