@@ -65,7 +65,7 @@ FROM alpine:3.21.0
 WORKDIR /app
 
 LABEL org.opencontainers.image.source="https://github.com/SjurSutterudSagen/ffxiv-tools" \
-  org.opencontainers.image.description="FFXIV Tools Data Access Service" \
+  org.opencontainers.image.description="FFXIV Tools Data Access API" \
   org.opencontainers.image.licenses="MIT" \
   org.opencontainers.image.version="0.1.0" \
   org.opencontainers.image.created="${BUILD_DATE}" \

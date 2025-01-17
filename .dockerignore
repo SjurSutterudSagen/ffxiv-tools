@@ -17,8 +17,8 @@ dist
 build
 
 # Rust
-services/*/target
-services/*/Cargo.lock
+packages/*/target
+packages/*/Cargo.lock
 
 # Debug
 npm-debug.log*
