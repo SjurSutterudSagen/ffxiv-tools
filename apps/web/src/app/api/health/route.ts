@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
-import { rateLimiter } from "./rate-limit";
+import { rateLimiter } from "@/lib/rate-limit";
 
 interface ServiceHealth {
   status: "OK" | "ERROR";

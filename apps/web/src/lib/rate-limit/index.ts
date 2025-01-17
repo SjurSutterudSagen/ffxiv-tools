@@ -3,6 +3,9 @@ interface RateLimitConfig {
   maxRequests: number; // Maximum requests per window
   cleanupIntervalMs: number; // Cleanup interval in milliseconds
   maxEntries?: number; // Maximum number of tracked IPs
+  podName?: string; // For pod identification
+  namespace?: string; // For namespace awareness
+  nodeName?: string; // For node awareness
 }
 interface RateLimitEntry {
   count: number;
@@ -46,6 +49,9 @@ class InMemoryRateLimiter {
       maxRequests: 20, // 20 requests per minute
       cleanupIntervalMs: 60_000, // Cleanup every minute
       maxEntries, // Limit tracked IPs from environment or default
+      podName: process.env.POD_NAME || "unknown",
+      namespace: process.env.POD_NAMESPACE || "default",
+      nodeName: process.env.KUBERNETES_NODE_NAME || "unknown",
       ...config,
     };
 
