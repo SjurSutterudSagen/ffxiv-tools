@@ -42,11 +42,23 @@ RUN mkdir -p apps/web
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /usr/lib/node_modules /usr/lib/node_modules
 
+# Copy package files
+COPY package*.json ./
+COPY packages/config/package.json ./packages/config/
+COPY apps/web/package.json ./apps/web/
+
+# Install dependencies
+RUN npm ci
+
 # Copy source files
-COPY package.json package-lock.json ./
+COPY tsconfig.json ./
+COPY packages/config ./packages/config/
 COPY apps/web ./apps/web
 
-# Build the app
+# Build config package first
+RUN npm run build:config
+
+# Build web app
 RUN npm run build:web
 
 # Stage 3: Runner

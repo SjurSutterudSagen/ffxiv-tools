@@ -26,12 +26,6 @@ services:
       timeout: 1s
       retries: 3
       start_period: 30s
-    readinessProbe:
-      httpGet:
-        path: /api/ready
-        port: 3000
-      initialDelaySeconds: 10
-      periodSeconds: 5
     depends_on:
       data-access:
         condition: service_healthy
@@ -43,14 +37,8 @@ services:
         - action: rebuild
           path: apps/web
           target: dev
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpu: "1"
-        requests:
-          memory: 256M
-          cpu: "0.5"
+    mem_limit: 512M
+    cpus: 1
 
   data-access:
     build:

@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 import { rateLimiter } from "@/lib/rate-limit";
+import { ALLOWED_ORIGINS } from "@/lib/constants";
+import { HEALTH } from "@ffxiv-tools/config";
+import { log } from "@/lib/logger";
+import { ServiceError } from "@/lib/errors";
 
 interface ServiceHealth {
   status: "OK" | "ERROR";
@@ -17,12 +21,12 @@ interface HealthStatus {
   version: string;
   environment: string;
   timestamp: string;
-  uptime: number;
+  uptimeSeconds: number;
   memory: {
-    heapUsed: number;
-    heapTotal: number;
-    rss: number;
-    maxHeapSize?: number;
+    heapUsedMB: number;
+    heapTotalMB: number;
+    residentSetSizeMB: number;
+    maxHeapSizeMB?: number;
     heapUsedPercentage?: number;
   };
   dependencies: {
@@ -30,10 +34,6 @@ interface HealthStatus {
     storage: ServiceHealth;
   };
 }
-
-const TIMEOUT_MS = 5000;
-const ALLOWED_ORIGINS = ["localhost", "ffxiv-tools.com"]; // Add your domains
-const MAX_RETRIES = 2;
 
 async function checkService(
   name: string,
@@ -44,7 +44,7 @@ async function checkService(
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    const timeoutId = setTimeout(() => controller.abort(), HEALTH.TIMEOUT_MS);
 
     const response = await fetch(url, {
       cache: "no-store",
@@ -60,14 +60,18 @@ async function checkService(
 
     if (!response.ok) {
       // Retry on 5xx errors
-      if (response.status >= 500 && retryCount < MAX_RETRIES) {
+      if (response.status >= 500 && retryCount < HEALTH.MAX_RETRIES) {
         await new Promise((resolve) =>
           setTimeout(resolve, 1000 * (retryCount + 1))
         );
 
         return checkService(name, url, retryCount + 1);
       }
-      throw new Error(`${name} returned ${response.status}`);
+      throw new ServiceError(
+        `Service returned ${response.status}`,
+        response.status,
+        name
+      );
     }
 
     return {
@@ -79,11 +83,13 @@ async function checkService(
     if (error instanceof Error && error.name === "AbortError") {
       return {
         status: "ERROR",
-        latency: TIMEOUT_MS,
-        error: `${name} timed out after ${TIMEOUT_MS}ms`,
+        latency: HEALTH.TIMEOUT_MS,
+        error: `${name} timed out after ${HEALTH.TIMEOUT_MS}ms`,
         timestamp: new Date().toISOString(),
       };
     }
+
+    log("error", `Health check failed for ${name}`, { service: name });
 
     return {
       status: "ERROR",
@@ -102,10 +108,10 @@ function getMemoryUsage() {
   )?.[1];
 
   return {
-    heapUsed: toMB(memory.heapUsed),
-    heapTotal: toMB(memory.heapTotal),
-    rss: toMB(memory.rss),
-    maxHeapSize: maxMemory ? parseInt(maxMemory) : undefined,
+    heapUsedMB: toMB(memory.heapUsed),
+    heapTotalMB: toMB(memory.heapTotal),
+    residentSetSizeMB: toMB(memory.rss),
+    maxHeapSizeMB: maxMemory ? parseInt(maxMemory) : undefined,
     heapUsedPercentage: maxMemory
       ? Math.round(
           (memory.heapUsed / (parseInt(maxMemory) * 1024 * 1024)) * 100
@@ -171,7 +177,7 @@ export async function GET() {
       version: process.env.BUILD_REVISION || "unknown",
       environment: process.env.NODE_ENV || "development",
       timestamp: new Date().toISOString(),
-      uptime: Math.round(startTime),
+      uptimeSeconds: Math.round(startTime),
       memory: getMemoryUsage(),
       dependencies: {
         dataAccess,
