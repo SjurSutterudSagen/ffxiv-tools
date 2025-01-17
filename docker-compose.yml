@@ -13,12 +13,13 @@ services:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
       - BUILD_REVISION=${BUILD_REVISION:-unknown}
+      - ALLOWED_ORIGINS=localhost,ffxiv-tools.com
     networks:
       - ffxiv-tools
     healthcheck:
-      test: ["CMD", "curl -f -H 'Accept: application/health+json' http://localhost:3000/api/health"]
+      test: ["CMD", "curl -f http://localhost:3000/api/live"]
       interval: 30s
-      timeout: 3s
+      timeout: 1s
       retries: 3
       start_period: 10s
     depends_on:
