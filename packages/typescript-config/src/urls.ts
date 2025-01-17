@@ -3,7 +3,7 @@ interface DevelopmentEnvironment {
   PORTS: {
     WEB: string;
     DATA_ACCESS: string;
-    STORAGE: string;
+    DATA_ANALYSIS: string;
   };
 }
 
@@ -22,7 +22,7 @@ export const URLS = {
       PORTS: {
         WEB: process.env.DEV_WEB_PORT || "3000",
         DATA_ACCESS: process.env.DEV_DATA_ACCESS_PORT || "3001",
-        STORAGE: process.env.DEV_STORAGE_PORT || "3002",
+        DATA_ANALYSIS: process.env.DEV_DATA_ANALYSIS_PORT || "3002",
       },
     },
     PRODUCTION: {
@@ -42,8 +42,8 @@ export const URLS = {
       PATH: "data-access",
       HEALTH: "/health",
     },
-    STORAGE: {
-      PATH: "storage",
+    DATA_ANALYSIS: {
+      PATH: "data-analysis",
       HEALTH: "/health",
     },
   },

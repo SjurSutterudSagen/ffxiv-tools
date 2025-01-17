@@ -27,9 +27,9 @@ services:
       retries: 3
       start_period: 30s
     depends_on:
-      data-access:
+      data-access-api:
         condition: service_healthy
-      storage:
+      data-analysis:
         condition: service_healthy
     restart: unless-stopped
     develop:
@@ -40,14 +40,14 @@ services:
     mem_limit: 512M
     cpus: 1
 
-  data-access:
+  data-access-api:
     build:
-      context: packages/data-access
+      context: packages/data-access-api
       dockerfile: ./Dockerfile
       args:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
-    container_name: ffxiv-tools-data-access
+    container_name: ffxiv-tools-data-access-api
     ports:
       - "3001:3001"
     environment:
@@ -66,17 +66,17 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: packages/data-access
+          path: packages/data-access-api
           target: dev
 
-  storage:
+  data-analysis:
     build:
-      context: packages/storage
+      context: packages/data-analysis
       dockerfile: ./Dockerfile
       args:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
-    container_name: ffxiv-tools-storage
+    container_name: ffxiv-tools-data-analysis
     ports:
       - "3002:3002"
     environment:
@@ -95,7 +95,7 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: packages/storage
+          path: packages/data-analysis
           target: dev
 
 networks:

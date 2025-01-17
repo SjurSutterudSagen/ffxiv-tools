@@ -1,5 +1,5 @@
 [package]
-name = "ffxiv-tools-data-access"
+name = "ffxiv-tools-data-access-api"
 version = "0.1.0"
 edition = "2021"
 

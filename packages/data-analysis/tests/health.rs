@@ -3,7 +3,7 @@ use axum::{
     http::{Request, StatusCode},
 };
 use tower::ServiceExt;
-use ffxiv_tools_storage::create_app;
+use ffxiv_tools_data_analysis::create_app;
 use axum::body::to_bytes;
 
 /// Tests for the health check endpoint

@@ -1,5 +1,5 @@
-use ffxiv_tools_storage::create_app;
-use ffxiv_tools_storage::run_app;
+use ffxiv_tools_data_analysis::create_app;
+use ffxiv_tools_data_analysis::run_app;
 
 #[tokio::main]
 async fn main() {

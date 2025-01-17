@@ -17,7 +17,7 @@ ENV CARGO_TERM_COLOR=always \
   RUST_BACKTRACE=1
 
 # Create a new empty shell project
-WORKDIR /usr/src/ffxiv-tools-storage
+WORKDIR /usr/src/ffxiv-tools-data-analysis
 
 # Install required system dependencies
 # hadolint ignore=DL3018
@@ -36,8 +36,8 @@ RUN addgroup -S rust && adduser -S rust -G rust
 RUN chown -R rust:rust $CARGO_HOME
 
 # Create src directory with proper permissions
-RUN mkdir -p /usr/src/ffxiv-tools-storage/src && \
-  chown -R rust:rust /usr/src/ffxiv-tools-storage
+RUN mkdir -p /usr/src/ffxiv-tools-data-analysis/src && \
+  chown -R rust:rust /usr/src/ffxiv-tools-data-analysis
 
 # Switch to non-root user for building
 USER rust
@@ -57,7 +57,7 @@ COPY --chown=rust:rust src ./src
 # Build the application
 RUN cargo build --release --locked && \
   cargo clean --release --doc && \
-  strip target/release/ffxiv-tools-storage
+  strip target/release/ffxiv-tools-data-analysis
 
 # Final stage
 FROM alpine:3.21.0
@@ -84,7 +84,7 @@ RUN apk --no-cache upgrade && \
 RUN addgroup -S rust && adduser -S rust -G rust
 
 # Copy the binary from builder
-COPY --from=builder /usr/src/ffxiv-tools-storage/target/release/ffxiv-tools-storage /app/
+COPY --from=builder /usr/src/ffxiv-tools-data-analysis/target/release/ffxiv-tools-data-analysis /app/
 
 # Set ownership
 RUN chown -R rust:rust /app
@@ -109,4 +109,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 ENTRYPOINT ["/sbin/tini", "--"]
 
 # Run the application
-CMD ["/app/ffxiv-tools-storage"] 
+CMD ["/app/ffxiv-tools-data-analysis"] 

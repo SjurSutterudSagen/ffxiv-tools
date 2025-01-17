@@ -1,5 +1,5 @@
-use ffxiv_tools_data_access::create_app;
-use ffxiv_tools_data_access::run_app;
+use ffxiv_tools_data_access_api::create_app;
+use ffxiv_tools_data_access_api::run_app;
 
 #[tokio::main]
 async fn main() {

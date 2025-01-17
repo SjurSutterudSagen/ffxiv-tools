@@ -12,12 +12,12 @@ export const HEALTH = {
         URLS.SERVICES.DATA_ACCESS.HEALTH
       }`,
     },
-    STORAGE: {
-      DEVELOPMENT: `${constructServiceUrl("DEVELOPMENT", "STORAGE")}${
-        URLS.SERVICES.STORAGE.HEALTH
+    DATA_ANALYSIS: {
+      DEVELOPMENT: `${constructServiceUrl("DEVELOPMENT", "DATA_ANALYSIS")}${
+        URLS.SERVICES.DATA_ANALYSIS.HEALTH
       }`,
-      PRODUCTION: `${constructServiceUrl("PRODUCTION", "STORAGE")}${
-        URLS.SERVICES.STORAGE.HEALTH
+      PRODUCTION: `${constructServiceUrl("PRODUCTION", "DATA_ANALYSIS")}${
+        URLS.SERVICES.DATA_ANALYSIS.HEALTH
       }`,
     },
   },
