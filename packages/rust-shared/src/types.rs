@@ -4,7 +4,7 @@ use ts_rs::TS;
 // Basic type definitions that can be expanded later
 #[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
-pub struct BasicData {
+pub struct ExampleBasicData {
     pub id: String,
     pub name: String,
     pub timestamp: i64,
@@ -12,7 +12,7 @@ pub struct BasicData {
 
 #[derive(Serialize, Deserialize, TS)]
 #[ts(export)]
-pub enum Status {
+pub enum ExampleStatus {
     Active,
     Inactive,
     Pending,
