@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npm run generate-types --workspace=root && next build",
     "test": "vitest",
     "test:once": "vitest --run",
     "start": "next start",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ffxiv-tools/config": "*",
+    "@project/shared-types": "0.1.0",
     "clsx": "^2.1.1",
     "next": "^15.1.4",
     "react": "^19.0.0",

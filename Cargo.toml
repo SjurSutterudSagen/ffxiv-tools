@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "packages/rust-shared",
+    "packages/data-analysis",
+    "packages/data-access-api"
+]
+resolver = "2"

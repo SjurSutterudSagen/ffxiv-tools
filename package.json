@@ -6,11 +6,13 @@
     "packages/*"
   ],
   "scripts": {
+    "clean:types": "rm -rf packages/shared-types/*.ts !packages/shared-types/index.ts",
+    "generate-types": "cd packages/rust-shared && cargo build",
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:data-access-api\" \"npm run dev:data-analysis\"",
     "dev:web": "npm run dev --workspace=@ffxiv-tools/web",
     "dev:data-access-api": "cd packages/data-access-api && cargo run",
     "dev:data-analysis": "cd packages/storage && cargo run",
-    "build": "npm run build:config && concurrently \"npm run build:web\" \"npm run build:data-access-api\" \"npm run build:data-analysis\"",
+    "build": "npm run clean:types && npm run generate-types && npm run build:config && concurrently \"npm run build:web\" \"npm run build:data-access-api\" \"npm run build:data-analysis\"",
     "build:web": "npm run build --workspace=@ffxiv-tools/web",
     "build:data-access-api": "cd packages/data-access-api && cargo build --release",
     "build:data-analysis": "cd packages/storage && cargo build --release",

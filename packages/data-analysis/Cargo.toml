@@ -2,6 +2,8 @@
 name = "ffxiv-tools-data-analysis"
 version = "0.1.0"
 edition = "2021"
+description = "Data Analysis service for ffxiv-tools"
+authors = ["Sjur Sutterud Sagen"]
 
 [dependencies]
 rust-shared = { path = "../rust-shared" }
