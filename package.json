@@ -6,8 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "clean:types": "rm -rf packages/shared-types/*.ts !packages/shared-types/index.ts",
-    "generate-types": "cd packages/rust-shared && cargo build",
+    "clean:types": "rm -rf packages/shared-types/typescript !packages/shared-types/index.ts",
+    "generate-types": "cd packages/rust-shared && cargo test",
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:data-access-api\" \"npm run dev:data-analysis\"",
     "dev:web": "npm run dev --workspace=@ffxiv-tools/web",
     "dev:data-access-api": "cd packages/data-access-api && cargo run",

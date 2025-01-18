@@ -1,5 +1,8 @@
-// Export types module
 pub mod types;
 
-// Re-export common types 
-pub use types::*;
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn export_typescript() {}
+}
