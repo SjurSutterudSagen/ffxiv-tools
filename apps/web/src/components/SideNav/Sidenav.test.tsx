@@ -21,6 +21,13 @@ describe("Sidenav", () => {
     expect(screen.getByText("Market")).toBeTruthy();
   });
 
+  it("renders with correct aria attributes", () => {
+    render(<Sidenav section="/market" />);
+
+    const sidenav = screen.getByRole("navigation");
+    expect(sidenav).toHaveAttribute("aria-label", "Sidenav");
+  });
+
   it("displays the correct sub-navigation items", () => {
     render(<Sidenav section="/market" />);
 

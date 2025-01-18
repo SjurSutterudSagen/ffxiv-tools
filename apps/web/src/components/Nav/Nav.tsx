@@ -28,7 +28,7 @@ export function Nav() {
             <Link href="/" className="text-xl font-bold">
               FFXIV Tools
             </Link>
-            <div className="ml-10 flex items-center space-x-4">
+            <nav className="ml-10 flex items-center space-x-4">
               {mainNavItems.map((item) => (
                 <Link
                   key={item.href}
@@ -43,7 +43,7 @@ export function Nav() {
                   {item.label}
                 </Link>
               ))}
-            </div>
+            </nav>
           </div>
         </div>
       </div>

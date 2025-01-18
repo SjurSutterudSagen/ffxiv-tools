@@ -92,7 +92,7 @@ export default function Sidenav({ section }: { section: string }) {
           </div>
 
           {/* Navigation Items */}
-          <nav className="space-y-2">
+          <nav aria-label="Sidenav" className="space-y-2">
             {currentSubNav.map((item) => (
               <Link
                 key={item.href}
