@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+rust-shared = { path = "../rust-shared" }
 axum = "0.8.1"
 polars = "0.45.1"
 serde = "1.0.217"

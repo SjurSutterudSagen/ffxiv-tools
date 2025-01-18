@@ -4,7 +4,7 @@ use axum::{
 };
 use std::net::SocketAddr;
 
-/// Health check endpoint
+// Health check endpoint
 async fn health() -> &'static str {
     tracing::debug!("Health check requested");
     "OK"
