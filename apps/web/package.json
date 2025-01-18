@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postbuild": "cp -r public .next/standalone/apps/web && cp -r .next/static .next/standalone/apps/web/.next",
     "dev": "next dev --turbopack",
     "build": "next build",
     "test": "vitest",
     "test:once": "vitest --run",
-    "start": "next start",
+    "start": "node .next/standalone/apps/web/server.js",
     "lint": "next lint"
   },
   "dependencies": {
