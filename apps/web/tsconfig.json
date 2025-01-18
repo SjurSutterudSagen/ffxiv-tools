@@ -19,8 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@ffxiv-tools/config": ["../../packages/typescript-config/src"]
+      "@ffxiv-tools/config": ["../../packages/typescript-config/src"],
+      "@ffxiv-tools/rust-shared": ["../../packages/rust-shared/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "vitest.config.mts"],
