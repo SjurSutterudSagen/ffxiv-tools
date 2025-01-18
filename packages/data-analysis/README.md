@@ -5,7 +5,7 @@ docker build \
   --build-arg BUILD_REVISION=$(git rev-parse --short HEAD) \
  --no-cache \
  -t ffxiv-tools-data-analysis \
- -f packages/data-analysis/Dockerfile services/data-analysis
+ -f packages/data-analysis/Dockerfile packages/data-analysis
 
 # Run the container
 

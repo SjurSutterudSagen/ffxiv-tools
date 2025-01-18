@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 import { rateLimiter } from "@/lib/rate-limit";
 import { ALLOWED_ORIGINS } from "@/lib/constants";
-import { HEALTH } from "../../../../../../packages/typescript-config/src";
+import { HEALTH } from "@ffxiv-tools/typescript-config";
 import { log } from "@/lib/logger";
 import { ServiceError } from "@/lib/errors";
 

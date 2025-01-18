@@ -1,11 +1,12 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface MainNavItem {
   label: string;
-  href: string;
+  href: Route;
 }
 
 const mainNavItems: MainNavItem[] = [

@@ -13,7 +13,7 @@ This directory contains TypeScript type definitions automatically generated from
 Import types from this package in your TypeScript code:
 
 ```typescript
-import { YourType } from '@project/shared-types';
+import { YourType } from "@ffxiv-tools/typescript-types";
 ```
 
 Configure your tsconfig.json paths to include this package.

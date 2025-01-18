@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface SubNavItem {
   label: string;
-  href: string;
+  href: Route;
 }
 
 // Define sub-navigation items for each main route
@@ -35,7 +36,9 @@ export default function Sidenav({ section }: { section: string }) {
   const pathname = usePathname();
   const currentSubNav = subNavConfig[section] || [];
 
-  if (!currentSubNav.length) return null;
+  if (!currentSubNav.length) {
+    return null;
+  }
 
   return (
     <aside

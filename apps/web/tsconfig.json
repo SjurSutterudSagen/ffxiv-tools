@@ -18,9 +18,11 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@ffxiv-tools/config": ["../../packages/typescript-config/src"],
-      "@ffxiv-tools/rust-shared": ["../../packages/rust-shared/src"]
+      "@ffxiv-tools/typescript-config": ["../../packages/typescript-config/src"],
+      "@ffxiv-tools/shared-types": ["../../packages/shared-types/src"],
+      "@/*": ["src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "vitest.config.mts"],

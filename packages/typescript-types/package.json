@@ -1,9 +1,9 @@
 {
-  "name": "@project/shared-types",
+  "name": "@ffxiv-tools/typescript-types",
   "version": "0.1.0",
   "private": true,
   "types": "index.ts",
   "scripts": {
-    "clean": "rm -f *.ts !index.ts"
+    "clean": "rm -f typescript/*.ts"
   }
 }

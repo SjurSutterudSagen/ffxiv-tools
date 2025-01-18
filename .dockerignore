@@ -51,4 +51,29 @@ Dockerfile*
 # Temporary files
 *.log
 *.tmp
-.cache 
+.cache # Build artifacts
+**/target/
+
+# Git
+.git/
+
+# IDE
+.idea/
+.vscode/
+
+# Editor files
+**/*.swp
+**/*.swo
+**/*.swn
+*~
+
+# Dependencies and environment
+**/.env
+**/.venv/
+**/env/
+**/venv/
+
+# Cache
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/

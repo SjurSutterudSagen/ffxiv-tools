@@ -1,5 +1,5 @@
 import { rateLimiter } from "./lib/rate-limit";
-import { log } from "@/lib/logger";
+import { log } from "./lib/logger";
 
 const SHUTDOWN_GRACE_PERIOD = 10_000; // 10 seconds
 
