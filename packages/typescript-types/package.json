@@ -4,6 +4,6 @@
   "private": true,
   "types": "index.ts",
   "scripts": {
-    "clean": "rm -f typescript/*.ts"
+    "clean": "rimraf ./types/*.ts"
   }
 }

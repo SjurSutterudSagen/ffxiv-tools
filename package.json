@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "clean:types": "rm -rf packages/shared-types/typescript !packages/shared-types/index.ts",
+    "clean:types": "npm run clean --workspace=@ffxiv-tools/typescript-types",
     "generate-types": "cargo test -p rust-shared",
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:data-access-api\" \"npm run dev:data-analysis\"",
     "dev:web": "npm run generate-types && npm run dev --workspace=@ffxiv-tools/web",
@@ -16,7 +16,7 @@
     "build:web": "npm run build --workspace=@ffxiv-tools/web",
     "build:data-access-api": "cargo build --release -p ffxiv-tools-data-access-api",
     "build:data-analysis": "cargo build --release -p ffxiv-tools-data-analysis",
-    "build:typescript-config": "cd packages/typescript-config && tsc",
+    "build:typescript-config": "npm run build --workspace=@ffxiv-tools/typescript-config",
     "test": "concurrently \"npm run test:web\" \"npm run test:data-access-api\" \"npm run test:data-analysis\"",
     "test:all": "npm run test:once --workspace=@ffxiv-tools/web && cargo test -p ffxiv-tools-data-access-api && cargo test -p ffxiv-tools-data-analysis",
     "test:web": "npm run test --workspace=@ffxiv-tools/web",

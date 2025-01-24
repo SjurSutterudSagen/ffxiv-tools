@@ -1,2 +1,2 @@
-export * from "./typescript/ExampleStatus";
-export * from "./typescript/ExampleBasicData";
+export * from "./src/ExampleStatus";
+export * from "./src/ExampleBasicData";
