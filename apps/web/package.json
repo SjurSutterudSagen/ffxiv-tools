@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postbuild": "cp -r public .next/standalone/apps/web && cp -r .next/static .next/standalone/apps/web/.next",
-    "dev": "next dev --turbopack",
     "build": "next build",
-    "test": "vitest",
-    "test:once": "vitest --run",
+    "clean": "rimraf .next node_modules",
+    "dev": "next dev --turbopack",
+    "lint": "next lint",
+    "postbuild": "cp -r public .next/standalone/apps/web && cp -r .next/static .next/standalone/apps/web/.next",
     "start": "node .next/standalone/apps/web/server.js",
-    "lint": "next lint"
+    "test": "vitest",
+    "test:once": "vitest --run"
   },
   "dependencies": {
     "@ffxiv-tools/typescript-config": "*",
