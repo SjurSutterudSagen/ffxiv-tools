@@ -37,6 +37,7 @@
     - [ ] Set up the basic error handling
     - [ ] Set up containerization
       - [x] Set up Dockerfile
+  - [ ] Set up the S3-like storage? (for buckets to store parquet files/ may be part of different project)
 
 ### Docs
 
