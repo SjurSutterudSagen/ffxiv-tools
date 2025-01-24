@@ -11,7 +11,7 @@
     "dev:web": "npm run generate-types && npm run dev --workspace=@ffxiv-tools/web",
     "dev:data-access-api": "cargo run -p ffxiv-tools-data-access-api",
     "dev:data-analysis": "cargo run -p ffxiv-tools-data-analysis",
-    "build": "npm run clean:types && npm run generate-types && npm run build:typescript-config && echo 'Finished building libraries.' &&concurrently \"npm run build:web\" \"npm run build:data-access-api\" \"npm run build:data-analysis\"",
+    "build": "npm run clean:ts-types && npm run generate-types && npm run build:typescript-config && echo 'Finished building libraries.' &&concurrently \"npm run build:web\" \"npm run build:data-access-api\" \"npm run build:data-analysis\"",
     "build:web": "npm run build --workspace=@ffxiv-tools/web",
     "build:data-access-api": "cargo build --release -p ffxiv-tools-data-access-api",
     "build:data-analysis": "cargo build --release -p ffxiv-tools-data-analysis",
