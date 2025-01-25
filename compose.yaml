@@ -2,7 +2,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: apps/web/Dockerfile
+      dockerfile: apps/web/Containerfile
       args:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
@@ -43,7 +43,7 @@ services:
   data-access-api:
     build:
       context: packages/data-access-api
-      dockerfile: ./Dockerfile
+      dockerfile: ./Containerfile
       args:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
@@ -72,7 +72,7 @@ services:
   data-analysis:
     build:
       context: packages/data-analysis
-      dockerfile: ./Dockerfile
+      dockerfile: ./Containerfile
       args:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}

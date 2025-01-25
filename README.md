@@ -2,38 +2,36 @@
 
 Sjur's FFXIV Tools
 
-# Docker Compose / local development
+# Podman Compose / local development
 
 Warnings:
 
-- The docker compose file is not yet fully tested.
-
-- The services take a long time to build. 500+ seconds.
+- The Podman compose file and Containerfiles are not yet fully tested.
 
 ## Start the services
 
-docker compose up
+Podman compose up
 
 ### For development with auto-rebuild
 
-docker compose watch
+Podman compose watch
 
 ## Build and start all services
 
-docker compose up --build
+Podman compose up --build
 
 ## Build and start in detached mode
 
-docker compose up --build -d
+Podman compose up --build -d
 
 ## Stop all services
 
-docker compose down
+Podman compose down
 
 ## View logs
 
-docker compose logs -f
+Podman compose logs -f
 
 ## Check service status
 
-docker compose ps
+Podman compose ps
