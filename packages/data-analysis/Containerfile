@@ -46,7 +46,7 @@ USER rust
 # Copy manifests
 COPY --chown=rust:rust Cargo.* ./
 
-# Cache dependencies
+# Cache dependencies (run build on empty src to cache dependencies)
 # hadolint ignore=DL3059
 RUN echo "fn main() {}" > src/main.rs && \
   cargo build --release --locked && \
