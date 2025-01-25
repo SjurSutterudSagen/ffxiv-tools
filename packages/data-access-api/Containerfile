@@ -1,6 +1,7 @@
-# syntax=docker/dockerfile:1.4
-
 # Using the official Rust image for building
+############################################################################################################
+# Stage 1: Builder
+############################################################################################################
 FROM rust:1.84.0-alpine3.21 AS builder
 
 ARG BUILD_DATE
@@ -59,7 +60,9 @@ RUN cargo build --release --locked && \
   cargo clean --release --doc && \
   strip target/release/ffxiv-tools-data-access-api
 
+############################################################################################################
 # Final stage
+############################################################################################################
 FROM alpine:3.21.0
 
 WORKDIR /app
@@ -100,10 +103,6 @@ ENV RUST_LOG=info \
   TZ=UTC \
   RUST_BACKTRACE=1 \
   RUST_LOG_FORMAT=json
-
-# Add healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost:3001/health | grep -q "OK" || exit 1
 
 # Use tini as init
 ENTRYPOINT ["/sbin/tini", "--"]

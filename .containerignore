@@ -79,3 +79,7 @@ Containerfile*
 **/__pycache__/
 **/.pytest_cache/
 **/.ruff_cache/
+
+# AI and ML
+.aider**
+.aider.**

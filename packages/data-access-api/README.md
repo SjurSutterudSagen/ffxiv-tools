@@ -5,7 +5,7 @@ podman build \
   --build-arg BUILD_REVISION=$(git rev-parse --short HEAD) \
  --no-cache \
  -t ffxiv-tools-data-access-api \
- -f packages/data-access-api/Containerfile packages/data-access-api
+ -f packages/data-access-api/Containerfile .
 
 # Run the container
 
