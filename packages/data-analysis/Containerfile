@@ -161,4 +161,4 @@ ENV RUST_LOG=info \
 ENTRYPOINT ["/sbin/tini", "--"]
 
 # Run the application
-CMD ["/app/data-analysis"]
+CMD ["/app/ffxiv-tools-data-analysis"]
