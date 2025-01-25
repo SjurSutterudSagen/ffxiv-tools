@@ -1,15 +1,11 @@
 # Using the official Rust image for building
 ############################################################################################################
-# Stage 1: Builder
+# Stage 1: Build the shared library (as a static library)
 ############################################################################################################
-FROM rust:1.84.0-alpine3.21 AS builder
+FROM rust:1.84.0-alpine3.21 AS shared-builder
 
 ARG BUILD_DATE
 ARG BUILD_REVISION
-
-# Validate build arguments
-RUN test -n "$BUILD_DATE" || (echo "BUILD_DATE not set" && false)
-RUN test -n "$BUILD_REVISION" || (echo "BUILD_REVISION not set" && false)
 
 # Set environment variables for the build
 ENV CARGO_TERM_COLOR=always \
@@ -17,11 +13,7 @@ ENV CARGO_TERM_COLOR=always \
   CARGO_HOME=/usr/local/cargo \
   RUST_BACKTRACE=1
 
-# Create a new empty shell project
-WORKDIR /usr/src/ffxiv-tools-data-analysis
-
 # Install required system dependencies
-# hadolint ignore=DL3018
 RUN apk --no-cache upgrade && \
   apk add --no-cache \
   musl-dev \
@@ -36,37 +28,102 @@ RUN addgroup -S rust && adduser -S rust -G rust
 # Set ownership of cargo home
 RUN chown -R rust:rust $CARGO_HOME
 
-# Create src directory with proper permissions
-RUN mkdir -p /usr/src/ffxiv-tools-data-analysis/src && \
-  chown -R rust:rust /usr/src/ffxiv-tools-data-analysis
+# Create the workspace directory
+WORKDIR /usr/src/ffxiv-tools
 
-# Switch to non-root user for building
-USER rust
+# Copy root manifests
+COPY --chown=rust:rust Cargo.toml .
+COPY --chown=rust:rust Cargo.lock .
 
-# Copy manifests
-COPY --chown=rust:rust Cargo.* ./
+# ⚠️ Fix workspace members to exclude data-analysis
+RUN sed -i '/members\s*=\s*\[/,/\]/c\members = ["packages\/rust-shared"]' Cargo.toml
 
-# Cache dependencies (run build on empty src to cache dependencies)
-# hadolint ignore=DL3059
-RUN echo "fn main() {}" > src/main.rs && \
-  cargo build --release --locked && \
-  rm -rf src
+# Copy shared library manifests
+COPY --chown=rust:rust packages/rust-shared/Cargo.toml packages/rust-shared/Cargo.toml
 
-# Copy the source code
-COPY --chown=rust:rust src ./src
+# Create a dummy lib.rs to cache dependencies
+RUN mkdir -p packages/rust-shared/src && \
+  echo "// dummy file" > packages/rust-shared/src/lib.rs
 
-# Build the application
-RUN cargo build --release --locked && \
-  cargo clean --release --doc && \
+# Cache dependencies (temporarily without --locked)
+RUN cargo build --release --package rust-shared && \
+  rm -rf packages/rust-shared/src
+
+# Copy the real shared library source code
+COPY --chown=rust:rust packages/rust-shared/src packages/rust-shared/src
+
+# Rebuild with --locked (now builds a static library)
+RUN cargo build --release --locked --package rust-shared
+
+############################################################################################################
+# Stage 2: Build the data analysis service (fixed workspace)
+############################################################################################################
+FROM rust:1.84.0-alpine3.21 AS service-builder
+
+ARG BUILD_DATE
+ARG BUILD_REVISION
+
+# Reuse environment variables and setup
+ENV CARGO_TERM_COLOR=always \
+  CARGO_NET_GIT_FETCH_WITH_CLI=true \
+  CARGO_HOME=/usr/local/cargo \
+  RUST_BACKTRACE=1
+
+RUN apk --no-cache upgrade && \
+  apk add --no-cache \
+  musl-dev \
+  pkgconfig \
+  openssl-dev \
+  git \
+  build-base
+
+RUN addgroup -S rust && adduser -S rust -G rust
+RUN chown -R rust:rust $CARGO_HOME
+
+WORKDIR /usr/src/ffxiv-tools
+
+# Copy the original root Cargo.toml (restores full workspace)
+COPY --chown=rust:rust Cargo.toml .
+COPY --chown=rust:rust Cargo.lock .
+
+# ⚠️ Fix workspace members to exclude data-access-api
+RUN sed -i '/members\s*=\s*\[/,/\]/c\members = ["packages\/rust-shared", "packages\/data-analysis"]' Cargo.toml
+
+# Copy rust-shared metadata (Cargo.toml + dummy src) for dependency resolution
+COPY --chown=rust:rust packages/rust-shared/Cargo.toml packages/rust-shared/Cargo.toml
+RUN mkdir -p packages/rust-shared/src && \
+  echo "// dummy file" > packages/rust-shared/src/lib.rs
+
+# Copy the built static library from Stage 1
+COPY --from=shared-builder /usr/src/ffxiv-tools/target/release/librust_shared.a /usr/lib/
+
+# Copy data analysis service manifests
+COPY --chown=rust:rust packages/data-analysis/Cargo.toml packages/data-analysis/Cargo.toml
+
+# Create a dummy main.rs to cache dependencies
+RUN mkdir -p packages/data-analysis/src && \
+  echo "fn main() {}" > packages/data-analysis/src/main.rs
+
+# Cache dependencies (now includes data-analysis)
+RUN cargo build --release --locked --package ffxiv-tools-data-analysis && \
+  rm -rf packages/data-analysis/src
+
+# Copy data analysis source code
+COPY --chown=rust:rust packages/data-analysis/src packages/data-analysis/src
+
+# Build the data analysis service
+RUN cargo build --release --locked --package ffxiv-tools-data-analysis && \
   strip target/release/ffxiv-tools-data-analysis
 
 ############################################################################################################
-# Final stage
+# Final stage: Runtime image
 ############################################################################################################
 FROM alpine:3.21.0
 
-WORKDIR /app
+ARG BUILD_DATE
+ARG BUILD_REVISION
 
+# Add labels with build metadata
 LABEL org.opencontainers.image.source="https://github.com/SjurSutterudSagen/ffxiv-tools" \
   org.opencontainers.image.description="FFXIV Tools Data Analysis Service" \
   org.opencontainers.image.licenses="MIT" \
@@ -74,6 +131,8 @@ LABEL org.opencontainers.image.source="https://github.com/SjurSutterudSagen/ffxi
   org.opencontainers.image.created="${BUILD_DATE}" \
   org.opencontainers.image.revision="${BUILD_REVISION}" \
   org.opencontainers.image.authors="Sjur Sutterud Sagen"
+
+WORKDIR /app
 
 # Install runtime dependencies
 RUN apk --no-cache upgrade && \
@@ -85,8 +144,8 @@ RUN apk --no-cache upgrade && \
 # Create a non-root user
 RUN addgroup -S rust && adduser -S rust -G rust
 
-# Copy the binary from builder
-COPY --from=builder /usr/src/ffxiv-tools-data-analysis/target/release/ffxiv-tools-data-analysis /app/
+# Copy the data analysis service binary
+COPY --from=service-builder /usr/src/ffxiv-tools/target/release/ffxiv-tools-data-analysis /app/
 
 # Set ownership
 RUN chown -R rust:rust /app
@@ -107,4 +166,4 @@ ENV RUST_LOG=info \
 ENTRYPOINT ["/sbin/tini", "--"]
 
 # Run the application
-CMD ["/app/ffxiv-tools-data-analysis"] 
+CMD ["/app/data-analysis"]
