@@ -6,7 +6,7 @@ description = "Data Access API service for ffxiv-tools"
 authors = ["Sjur Sutterud Sagen"]
 
 [dependencies]
-rust-shared = { path = "../rust-shared" }
+rust-shared = { workspace = true }
 axum = "0.8.1"
 polars = "0.45.1"
 serde = "1.0.217"

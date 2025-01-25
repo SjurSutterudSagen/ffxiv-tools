@@ -1,7 +1,9 @@
 [workspace]
 members = [
-    "packages/rust-shared",
     "packages/data-analysis",
     "packages/data-access-api"
 ]
 resolver = "2"
+
+[workspace.dependencies]
+rust-shared = { path = "packages/rust-shared" }
