@@ -1,7 +1,4 @@
-use axum::{
-    routing::get,
-    Router,
-};
+use axum::{routing::get, Router};
 use std::net::SocketAddr;
 
 /// Health check endpoint
@@ -12,13 +9,12 @@ async fn health() -> &'static str {
 
 pub fn create_app() -> Router {
     tracing::debug!("Creating application router");
-    Router::new()
-        .route("/health", get(health))
+    Router::new().route("/health", get(health))
 }
 
 pub async fn run_app(app: Router) {
     let addr = SocketAddr::from(([0, 0, 0, 0], 3002));
-    
+
     tracing::info!("Data Analysis service listening on {}", addr);
 
     match tokio::net::TcpListener::bind(addr).await {
@@ -31,4 +27,4 @@ pub async fn run_app(app: Router) {
             tracing::error!("Failed to bind to {}: {}", addr, e);
         }
     }
-} 
+}

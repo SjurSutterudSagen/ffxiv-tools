@@ -1,10 +1,10 @@
+use axum::body::to_bytes;
 use axum::{
     body::Body,
     http::{Request, StatusCode},
 };
-use tower::ServiceExt;
 use ffxiv_tools_data_access_api::create_app;
-use axum::body::to_bytes;
+use tower::ServiceExt;
 
 /// Tests for the health check endpoint
 #[cfg(test)]
@@ -32,4 +32,4 @@ mod health_tests {
         assert_eq!(status, StatusCode::OK);
         assert_eq!(body, EXPECTED_RESPONSE);
     }
-} 
+}

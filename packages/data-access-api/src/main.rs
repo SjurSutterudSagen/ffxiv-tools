@@ -21,4 +21,4 @@ async fn main() {
     run_app(app).await;
 
     tracing::info!("Data Access API service shutting down");
-} 
+}
