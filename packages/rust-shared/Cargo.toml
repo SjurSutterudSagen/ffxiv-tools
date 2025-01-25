@@ -6,7 +6,7 @@ description = "Shared Rust types and utilities for ffxiv-tools"
 authors = ["Sjur Sutterud Sagen"]
 
 [lib]
-crate-type = ["staticlib"]
+crate-type = ["rlib", "staticlib"]
 
 [dependencies]
 serde = { version = "1.0.217", features = ["derive"] }

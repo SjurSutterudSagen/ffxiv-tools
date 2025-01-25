@@ -35,7 +35,7 @@ WORKDIR /usr/src/ffxiv-tools
 COPY --chown=rust:rust Cargo.toml .
 COPY --chown=rust:rust Cargo.lock .
 
-# ⚠️ Fix workspace members to exclude data-analysis
+# ⚠️ Fix workspace members to exclude  other applications
 RUN sed -i '/members\s*=\s*\[/,/\]/c\members = ["packages\/rust-shared"]' Cargo.toml
 
 # Copy shared library manifests
@@ -86,16 +86,11 @@ WORKDIR /usr/src/ffxiv-tools
 COPY --chown=rust:rust Cargo.toml .
 COPY --chown=rust:rust Cargo.lock .
 
-# ⚠️ Fix workspace members to exclude data-access-api
+# Fix workspace members to exclude  other applications
 RUN sed -i '/members\s*=\s*\[/,/\]/c\members = ["packages\/rust-shared", "packages\/data-analysis"]' Cargo.toml
 
-# Copy rust-shared metadata (Cargo.toml + dummy src) for dependency resolution
-COPY --chown=rust:rust packages/rust-shared/Cargo.toml packages/rust-shared/Cargo.toml
-RUN mkdir -p packages/rust-shared/src && \
-  echo "// dummy file" > packages/rust-shared/src/lib.rs
-
-# Copy the built static library from Stage 1
-COPY --from=shared-builder /usr/src/ffxiv-tools/target/release/librust_shared.a /usr/lib/
+# Copy the entire rust-shared source code
+COPY --chown=rust:rust packages/rust-shared packages/rust-shared
 
 # Copy data analysis service manifests
 COPY --chown=rust:rust packages/data-analysis/Cargo.toml packages/data-analysis/Cargo.toml
@@ -104,7 +99,7 @@ COPY --chown=rust:rust packages/data-analysis/Cargo.toml packages/data-analysis/
 RUN mkdir -p packages/data-analysis/src && \
   echo "fn main() {}" > packages/data-analysis/src/main.rs
 
-# Cache dependencies (now includes data-analysis)
+# Cache dependencies (includes rust-shared as a Rust library)
 RUN cargo build --release --locked --package ffxiv-tools-data-analysis && \
   rm -rf packages/data-analysis/src
 
