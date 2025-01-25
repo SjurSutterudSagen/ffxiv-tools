@@ -42,8 +42,8 @@ services:
 
   data-access-api:
     build:
-      context: packages/data-access-api
-      dockerfile: ./Containerfile
+      context: .
+      dockerfile: packages/data-access-api/Containerfile
       args:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
@@ -71,8 +71,8 @@ services:
 
   data-analysis:
     build:
-      context: packages/data-analysis
-      dockerfile: ./Containerfile
+      context: .
+      dockerfile: packages/data-analysis/Containerfile
       args:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
