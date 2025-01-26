@@ -1,0 +1,43 @@
+{
+  "name": "ffxiv-tools",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "generate-types": "cargo test -p rust-shared",
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:data-access-api\" \"npm run dev:data-analysis\"",
+    "dev:web": "npm run generate-types && npm run dev --workspace=@ffxiv-tools/web",
+    "dev:data-access-api": "cargo run -p ffxiv-tools-data-access-api",
+    "dev:data-analysis": "cargo run -p ffxiv-tools-data-analysis",
+    "build": "npm run clean:ts-types && npm run generate-types && npm run build:typescript-config && echo 'Finished building libraries.' && concurrently \"npm run build:web\" \"npm run build:data-access-api\" \"npm run build:data-analysis\"",
+    "build:web": "npm run build --workspace=@ffxiv-tools/web",
+    "build:data-access-api": "cargo build --release -p ffxiv-tools-data-access-api",
+    "build:data-analysis": "cargo build --release -p ffxiv-tools-data-analysis",
+    "build:typescript-config": "npm run build --workspace=@ffxiv-tools/typescript-config",
+    "clean": "concurrently \"npm run clean:web\" \"npm run clean:data-access-api\" \"npm run clean:data-analysis\" \"npm run clean:ts-config\" \"npm run clean:ts-types\" && rimraf node_modules target && echo 'Finished cleaning.'",
+    "clean:web": "npm run clean --workspace=@ffxiv-tools/web",
+    "clean:data-access-api": "cargo clean -p ffxiv-tools-data-access-api",
+    "clean:data-analysis": "cargo clean -p ffxiv-tools-data-analysis",
+    "clean:ts-config": "npm run clean --workspace=@ffxiv-tools/typescript-config",
+    "clean:ts-types": "npm run clean --workspace=@ffxiv-tools/typescript-types",
+    "test": "concurrently \"npm run test:web\" \"npm run test:data-access-api\" \"npm run test:data-analysis\"",
+    "test:all": "npm run test:once --workspace=@ffxiv-tools/web && cargo test -p ffxiv-tools-data-access-api && cargo test -p ffxiv-tools-data-analysis",
+    "test:web": "npm run test --workspace=@ffxiv-tools/web",
+    "test:data-access-api": "cargo test -p ffxiv-tools-data-access-api",
+    "test:data-analysis": "cargo test -p ffxiv-tools-data-analysis",
+    "lint": "concurrently \"npm run lint:web\" \"npm run lint:data-access-api\" \"npm run lint:data-analysis\"",
+    "lint:web": "npm run lint --workspace=@ffxiv-tools/web",
+    "lint:data-access-api": "cargo clippy -p ffxiv-tools-data-access-api",
+    "lint:data-analysis": "cargo clippy -p ffxiv-tools-data-analysis",
+    "start": "concurrently \"npm run start:web\" \"npm run start:data-access-api\" \"npm run start:data-analysis\"",
+    "start:web": "npm run start --workspace=@ffxiv-tools/web",
+    "start:data-access-api": "cargo run --release -p ffxiv-tools-data-access-api",
+    "start:data-analysis": "cargo run --release -p ffxiv-tools-data-analysis"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "rimraf": "^6.0.1"
+  }
+}

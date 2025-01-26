@@ -1,0 +1,104 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Containerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
+    container_name: ffxiv-tools-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - BUILD_REVISION=${BUILD_REVISION:-unknown}
+      - ALLOWED_ORIGINS=localhost,ffxiv-tools.com
+      - RATE_LIMIT_MAX_ENTRIES=10000
+      - POD_NAME=${POD_NAME:-unknown}
+      - POD_NAMESPACE=${POD_NAMESPACE:-default}
+      - KUBERNETES_NODE_NAME=${KUBERNETES_NODE_NAME:-unknown}
+    networks:
+      - ffxiv-tools
+    healthcheck:
+      test: ["CMD", "curl -f http://localhost:3000/api/live"]
+      interval: 30s
+      timeout: 1s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      data-access-api:
+        condition: service_healthy
+      data-analysis:
+        condition: service_healthy
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: apps/web
+          target: dev
+    mem_limit: 512M
+    cpus: 1
+
+  data-access-api:
+    build:
+      context: .
+      dockerfile: packages/data-access-api/Containerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
+    container_name: ffxiv-tools-data-access-api
+    ports:
+      - "3001:3001"
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+      - ADDRESS=0.0.0.0:3001
+    networks:
+      - ffxiv-tools
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: packages/data-access-api
+          target: dev
+
+  data-analysis:
+    build:
+      context: .
+      dockerfile: packages/data-analysis/Containerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        BUILD_REVISION: ${BUILD_REVISION:-$(git rev-parse --short HEAD)}
+    container_name: ffxiv-tools-data-analysis
+    ports:
+      - "3002:3002"
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+      - ADDRESS=0.0.0.0:3002
+    networks:
+      - ffxiv-tools
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: packages/data-analysis
+          target: dev
+
+networks:
+  ffxiv-tools:
+    name: ffxiv-tools
+    driver: bridge

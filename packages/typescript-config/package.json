@@ -1,0 +1,18 @@
+{
+  "name": "@ffxiv-tools/typescript-config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "@ffxiv-tools/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "clean": "rimraf .next node_modules",
+    "dev": "next dev --turbopack",
+    "lint": "next lint",
+    "postbuild": "cp -r public .next/standalone/apps/web && cp -r .next/static .next/standalone/apps/web/.next",
+    "start": "node .next/standalone/apps/web/server.js",
+    "test": "vitest",
+    "test:once": "vitest --run"
+  },
+  "dependencies": {
+    "@ffxiv-tools/typescript-config": "0.1.0",
+    "@ffxiv-tools/typescript-types": "0.1.0",
+    "clsx": "^2.1.1",
+    "next": "^15.1.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.10.6",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "15.1.4",
+    "jsdom": "^26.0.0",
+    "postcss": "^8.5.0",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^2.1.8"
+  }
+}
