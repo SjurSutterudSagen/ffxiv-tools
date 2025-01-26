@@ -28,32 +28,41 @@ RUN addgroup -S rust && adduser -S rust -G rust
 # Set ownership of cargo home
 RUN chown -R rust:rust $CARGO_HOME
 
-# Create the workspace directory
 WORKDIR /usr/src/ffxiv-tools
 
-# Copy root manifests
+# Copy root manifests FIRST
 COPY --chown=rust:rust Cargo.toml .
 COPY --chown=rust:rust Cargo.lock .
 
-# ⚠️ Fix workspace members to exclude  other applications
-RUN sed -i '/members\s*=\s*\[/,/\]/c\members = ["packages\/rust-shared"]' Cargo.toml
+# Create minimal package structure for initial caching
+RUN mkdir -p packages/rust-shared/src && \
+  echo "// dummy" > packages/rust-shared/src/lib.rs
+COPY --chown=rust:rust packages/rust-shared/Cargo.toml packages/rust-shared/
+
+# Initialize cache with workspace hack
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/usr/src/ffxiv-tools/target \
+  sed -i '/members\s*=\s*\[/,/\]/c\members = ["packages\/rust-shared"]' Cargo.toml && \
+  cargo fetch
 
 # Copy shared library manifests
 COPY --chown=rust:rust packages/rust-shared/Cargo.toml packages/rust-shared/Cargo.toml
 
 # Create a dummy lib.rs to cache dependencies
-RUN mkdir -p packages/rust-shared/src && \
-  echo "// dummy file" > packages/rust-shared/src/lib.rs
-
-# Cache dependencies (temporarily without --locked)
-RUN cargo build --release --package rust-shared && \
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/usr/src/ffxiv-tools/target \
+  mkdir -p packages/rust-shared/src && \
+  echo "// dummy file" > packages/rust-shared/src/lib.rs && \
+  cargo build --release --package rust-shared && \
   rm -rf packages/rust-shared/src
 
 # Copy the real shared library source code
 COPY --chown=rust:rust packages/rust-shared/src packages/rust-shared/src
 
 # Rebuild with --locked (now builds a static library)
-RUN cargo build --release --locked --package rust-shared
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/usr/src/ffxiv-tools/target \
+  cargo build --release --locked --package rust-shared
 
 ############################################################################################################
 # Stage 2: Build the data analysis service (fixed workspace)
@@ -82,33 +91,39 @@ RUN chown -R rust:rust $CARGO_HOME
 
 WORKDIR /usr/src/ffxiv-tools
 
-# Copy the original root Cargo.toml (restores full workspace)
+# Copy ALL workspace manifests first
 COPY --chown=rust:rust Cargo.toml .
 COPY --chown=rust:rust Cargo.lock .
 
-# Fix workspace members to exclude  other applications
+# Modify workspace to exclude other applications
 RUN sed -i '/members\s*=\s*\[/,/\]/c\members = ["packages\/rust-shared", "packages\/data-analysis"]' Cargo.toml
 
-# Copy the entire rust-shared source code
-COPY --chown=rust:rust packages/rust-shared packages/rust-shared
+# Copy package manifests
+COPY --chown=rust:rust packages/rust-shared/Cargo.toml packages/rust-shared/
+COPY --chown=rust:rust packages/data-analysis/Cargo.toml packages/data-analysis/
 
-# Copy data analysis service manifests
-COPY --chown=rust:rust packages/data-analysis/Cargo.toml packages/data-analysis/Cargo.toml
-
-# Create a dummy main.rs to cache dependencies
-RUN mkdir -p packages/data-analysis/src && \
+# Create dummy source files
+RUN mkdir -p packages/rust-shared/src && \
+  echo "// dummy" > packages/rust-shared/src/lib.rs && \
+  mkdir -p packages/data-analysis/src && \
   echo "fn main() {}" > packages/data-analysis/src/main.rs
 
-# Cache dependencies (includes rust-shared as a Rust library)
-RUN cargo build --release --locked --package ffxiv-tools-data-analysis && \
-  rm -rf packages/data-analysis/src
+# Initial build with workspace dependencies
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/usr/src/ffxiv-tools/target \
+  cargo build --release --locked --package rust-shared --package ffxiv-tools-data-analysis
 
-# Copy data analysis source code
+
+# Copy real source code
+COPY --chown=rust:rust packages/rust-shared/src packages/rust-shared/src
 COPY --chown=rust:rust packages/data-analysis/src packages/data-analysis/src
 
-# Build the data analysis service
-RUN cargo build --release --locked --package ffxiv-tools-data-analysis && \
-  strip target/release/ffxiv-tools-data-analysis
+# Final build (without target cache mount)
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+  --mount=type=cache,target=/usr/src/ffxiv-tools/target \
+  cargo build --release --locked --package ffxiv-tools-data-analysis && \
+  cp target/release/ffxiv-tools-data-analysis /app-binary && \
+  strip /app-binary
 
 ############################################################################################################
 # Final stage: Runtime image
@@ -139,8 +154,8 @@ RUN apk --no-cache upgrade && \
 # Create a non-root user
 RUN addgroup -S rust && adduser -S rust -G rust
 
-# Copy the data analysis service binary
-COPY --from=service-builder /usr/src/ffxiv-tools/target/release/ffxiv-tools-data-analysis /app/
+# Copy from explicit path (not target directory)
+COPY --from=service-builder /app-binary /app/ffxiv-tools-data-analysis
 
 # Set ownership
 RUN chown -R rust:rust /app
