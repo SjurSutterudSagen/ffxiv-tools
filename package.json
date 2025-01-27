@@ -1,5 +1,5 @@
 {
-  "name": "ffxiv-tools",
+  "name": "@ffxiv-tools/source",
   "private": true,
   "workspaces": [
     "apps/*",
